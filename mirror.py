@@ -80,7 +80,7 @@ class Weather(Frame):
 		self.iconLabel = Label(self.weather_frame, bg='black')
 		self.iconLabel.pack(side=LEFT, anchor=N, padx=20, pady=20)
 
-		self.summaryLabel = Label(self, font=('Helvetica', text_medium), fg='white', bg='black')
+		self.summaryLabel = Label(self, font=('Helvetica', text_small), fg='white', bg='black')
 		self.summaryLabel.pack(side=TOP, anchor=E)
 
 		self.locationLabel = Label(self, font=('Helvetica', text_small), fg='white', bg='black')
@@ -136,7 +136,7 @@ class Weather(Frame):
 				if self.weather_icon != weather_icon2:
 					self.weather_icon = weather_icon2
 					image = Image.open(weather_icon2)
-					image = image.resize((75,75), Image.ANTIALIAS)
+					image = image.resize((65,65), Image.ANTIALIAS)
 					iamge = image.convert('RGB')
 					photo = ImageTk.PhotoImage(image)
 
@@ -207,7 +207,10 @@ class News(Frame):
 			chosen_headlines = sample(headlines, 5)
 
 			for post in chosen_headlines:
-				headline = NewsHeadline(self.headlinesContainer, post)
+				if post.endswith('[premium]'):
+					headline = NewsHeadline(self.headlinesContainer, post[:-10])
+				else:
+					headline = NewsHeadline(self.headlinesContainer, post)
 				headline.pack(side=TOP, anchor=W)
 
 		except Exception as e:
@@ -233,6 +236,39 @@ class NewsHeadline(Frame):
 		self.event_name = Label(self, text=self.event_name, font=('Helvetica', text_small), fg='white', bg='black')
 		self.event_name.pack(side=LEFT, anchor=N)
 
+class Welcome(Frame):
+
+	def __init__(self, parent, *args, **kwargs):
+		Frame.__init__(self, parent, bg='black')
+		self.message_lookup = {
+			'Morgen': 'Guten Morgen, Philipp!',
+			'Mittag': 'Guten Tag, Philipp!',
+			'Abend': 'Guten Abend, Philipp!',
+			'Nacht': 'Noch immer wach?'
+		}
+		self.message = ''
+		self.messageLabel = Label(self, font=('Helvetica', text_big), fg='white', bg='black')
+		self.messageLabel.pack(anchor=N, side=TOP)
+		self.get_message()
+
+
+	def get_message(self):
+		current_time = int(time.strftime('%H'))
+		if current_time > 5 and current_time < 10:
+			message2 = self.message_lookup['Morgen']
+		elif current_time > 10 and current_time < 18:
+			message2 = self.message_lookup['Mittag']
+		elif current_time > 18 and current_time < 23:
+			message2 = self.message_lookup['Abend']
+		else:
+			message2 = self.message_lookup['Nacht']
+
+		if self.message != message2:
+			self.message = message2
+			self.messageLabel.config(text=message2)
+
+			
+
 class Screen:
 
 	def __init__(self):
@@ -254,6 +290,9 @@ class Screen:
 
 		self.news = News(self.bottomFrame)
 		self.news.pack(side=LEFT, anchor=S, padx=100, pady=60)
+
+		self.welcome = Welcome(self.topFrame)
+		self.welcome.pack(side=BOTTOM, anchor=S) 
 
 	def toggle_fullscreen(self, event=None):
 		self.state = not self.state
