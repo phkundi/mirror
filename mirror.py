@@ -4,15 +4,29 @@ import requests
 import json
 import feedparser
 import speech_recognition as sr 
+import threading
 
 from random import sample
 from tkinter import *
 from PIL import Image, ImageTk
+from contextlib import contextmanager
 
 from speech import Speech
 
 # Lokalisierung
 locale.setlocale(locale.LC_TIME, 'de_DE')
+ui_locale = 'de_DE'
+
+LOCALE_LOCK  = threading.Lock()
+
+@contextmanager
+def setlocale(name):
+	with LOCALE_LOCK:
+		saved = locale.setlocale(locale.LC_ALL)
+		try:
+			yield locale.setlocale(locale.LC_ALL, name)
+		finally: 
+			locale.setlocale(locale.LC_ALL, saved)
 
 # Textgrößen
 text_small = 20
@@ -66,6 +80,25 @@ class Time(Frame):
         self.dateLabel.pack(side=TOP, anchor=W)
         # self.timeLabel.grid(row=0, column=0, sticky=W)
         # self.dateLabel.grid(row=1, column=0, sticky=W)
+
+        self.tick()
+
+    def tick(self):
+    	with setlocale(ui_locale):
+    		time2 = time.strftime('%H:%M')
+
+    	date2 = time.strftime('%A, %d, %B')
+
+    	# Change time if it updated
+    	if time2 != self.time:
+    		self.time = time2
+    		self.timeLabel.config(text=time2)
+    	if date2 != self.date:
+    		self.date = date2
+    		self.dateLabel.config(text=date2)
+
+    	# update time every 200ms
+    	self.timeLabel.after(200, self.tick)
 
 
 class Weather(Frame):
@@ -259,7 +292,7 @@ class Welcome(Frame):
         Frame.__init__(self, parent, bg='black')
         self.message_lookup = {
             'Morgen': 'Guten Morgen, Philipp!',
-            'Mittag': 'Guten Tag, Philipp!',
+            'Mittag': 'Hallo, Philipp!',
             'Abend': 'Guten Abend, Philipp!',
             'Nacht': 'Noch immer wach?'
         }
@@ -332,7 +365,7 @@ if __name__ == '__main__':
 	print('Listening for keyword')
 	word = s.recognize_speech(r, mic)
 
-	if word['transcription'].lower() == 'starten':
+	if word['transcription'].lower() == 'start':
 		w = Screen()
 		w.tk.after(120000, lambda: w.tk.destroy()) # fenster nach 120s automatisch schließen
 		w.tk.mainloop()
