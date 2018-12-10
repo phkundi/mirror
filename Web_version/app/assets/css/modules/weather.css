@@ -1,0 +1,33 @@
+.temperature{
+	font-size: 6rem;
+	padding-right: 10px;
+}
+
+.description{
+	margin-top: 25px;
+	font-size: 1.4rem;
+	font-weight: 100;
+	display: block;
+}
+
+.icon{
+	padding-left: 10px;
+
+	img{
+		margin-top: 10px;
+	}
+}
+
+.divider{
+	width: 15%;
+	float: right;
+	display: block;
+	clear: both;
+	position: absolute;
+	right: 1%;
+}
+
+.location{
+	display: block;
+	margin-top: 10px;
+}

@@ -1,2 +1,4 @@
 testfile.py
 __pycache__
+Web_version/node_modules
+*.jpg
