@@ -35,7 +35,7 @@ text_small = 20
 text_medium = 25
 text_big = 45
 text_xlarge = 90
-
+print('blabla')
 # Manuelle Ortsangabe (optional)
 latitude = None
 longitude = None
